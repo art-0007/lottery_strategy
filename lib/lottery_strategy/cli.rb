@@ -15,6 +15,8 @@ class LotteryStrategy::CLI
 
         puts "1. Top 5 players in Powerball USA     2. Top 5 players in Mega Millions USA".colorize(:green)
         puts "____________________________________________________________________________".colorize(:yellow)
+
+        @draws = LotteryStrategy::Draws.draws
     end
 
     def menu
