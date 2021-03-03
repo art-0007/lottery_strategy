@@ -32,6 +32,29 @@ class LotteryStrategy::Draws
         right_draw = @@all.detect {|draw| draw.draw_date < a }
         puts "closest date: #{right_draw.draw_date.strftime("%m/%d/%Y")}, winning numbers: #{right_draw.winning_numbers.first 5}, powerball: #{right_draw.winning_numbers.last}".colorize(:light_blue)    
     end
+
+    def self.counted_num
+        #binding.pry
+        counts = Hash.new(0)
+        @@all.each do |arr|
+            #binding.pry
+            arr_1 = arr.winning_numbers.first 5
+            arr_1.each do |num|
+                counts[num] +=1
+            end
+        end  
+        counts 
+    end
+
+    def self.frequently_numbers
+        numbers = counted_num.sort_by { |k, v| v }.last 5
+        numbers.reverse    
+    end
+
+    def self.rarely_numbers
+        numbers = counted_num.sort_by { |k, v| v }.first 5
+        numbers    
+    end
     
   
     def self.all

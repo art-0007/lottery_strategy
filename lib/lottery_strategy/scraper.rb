@@ -17,7 +17,6 @@ class LotteryStrategy::Scraper
       
       
         def make_draws
-            puts "Hello, I am here!"
             get_results.each {|draw| LotteryStrategy::Draws.new_draws(draw)} 
         end
     end
