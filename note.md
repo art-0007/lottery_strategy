@@ -1,4 +1,4 @@
-check result for specific date.
+check result for specific date #
 show Biggest Lottery Winners
 show strategy list 
 choose your own strategy
@@ -11,3 +11,5 @@ strategy list
 3. long-standing numbers
 4. your lucky days
 5. mix strategy
+
+#<LotteryStrategy::Draws:0x00007fbf88900a70 @draw_date=2021-02-27 00:00:00 -0500, @multiplier=3, @winning_numbers=[2, 28, 31, 44, 52, 18]

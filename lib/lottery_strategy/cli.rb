@@ -5,20 +5,20 @@ class LotteryStrategy::CLI
     def call
         #binding.pry
         LotteryStrategy::Scraper.new.make_draws 
-        binding.pry
+        #binding.pry
         list_draws
         menu
         goodbuy
     end
 
     def list_draws
-        # puts "Hello! Do you like to play a games? These are the Biggest Lottery Winners:".colorize(:light_blue)
-        # puts "____________________________________________________________________________".colorize(:yellow)
+        puts "Hello! Do you like to play a games? These are the Biggest Lottery Winners:".colorize(:light_blue)
+        puts "____________________________________________________________________________".colorize(:yellow)
 
-        # puts "1. Top 5 players in Powerball USA     2. Top 5 players in Mega Millions USA".colorize(:green)
-        # puts "____________________________________________________________________________".colorize(:yellow)
+        puts "1. Top 5 players in Powerball USA     2. Top 5 players in Mega Millions USA".colorize(:green)
+        puts "____________________________________________________________________________".colorize(:yellow)
 
-        @draws = LotteryStrategy::Draws.draws
+        #@draws = LotteryStrategy::Draws.draws
     end
 
     def menu
@@ -28,8 +28,11 @@ class LotteryStrategy::CLI
         puts "Enter the number of the deal you'd like more info on or type list or exit"
         input  = gets.strip.downcase
         case input
-        when "1"
-            puts "option 1"
+            when "1"
+            puts "Enter the date you'd like to check in format yyyy-mm-dd"
+            input  = gets.strip.downcase
+            right_draw = LotteryStrategy::Draws.find_a_drow_by_date(input)
+            right_draw
         when "2"
             puts "option 2"
         when "list"
