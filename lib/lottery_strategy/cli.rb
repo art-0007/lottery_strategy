@@ -51,14 +51,17 @@ to put our methods to the test, go ahead and choose your way through our list.
             when "4"
                 puts "option 4"
             when "5"
-                puts "option 5"
+                puts "For our lucky days method please enter your 5 lucky dates in format: yyyy-mm-dd,yyyy-mm-dd,yyyy-mm-dd,yyyy-mm-dd,yyyy-mm-dd".colorize(:light_blue)
+            input  = gets.strip.downcase
+            lucky_draw = LotteryStrategy::Draws.lucky_days(input)
+            lucky_draw
             when "6"
                 puts "option 6"
             when "7"
-            puts "Enter the date you'd like to check in format yyyy-mm-dd".colorize(:light_blue)
+            puts "Enter the date you'd like to check in format: yyyy-mm-dd".colorize(:light_blue)
             input  = gets.strip.downcase
-            right_draw = LotteryStrategy::Draws.find_a_draw_by_date(input)
-            right_draw
+            closest_draw = LotteryStrategy::Draws.find_a_draw_by_date(input)
+            puts "closest date: #{closest_draw.draw_date.strftime("%m/%d/%Y")}, winning numbers: #{closest_draw.winning_numbers.first 5}, powerball: #{closest_draw.winning_numbers.last}".colorize(:light_blue)
             when "8"
             puts "option 2"
             when "list"

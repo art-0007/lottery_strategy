@@ -6,15 +6,6 @@ class LotteryStrategy::Draws
   
     @@all = []
 
-    # def self.draws
-    #     puts "Hello! Do you like to play a games? These are the Biggest Lottery Winners:".colorize(:light_blue)
-    #     puts "____________________________________________________________________________".colorize(:yellow)
-
-    #     puts "1. Top 5 players in Powerball USA     2. Top 5 players in Mega Millions USA".colorize(:green)
-    #     puts "____________________________________________________________________________".colorize(:yellow)
-        
-    #  end
-  
     def self.new_draws(hash)
          self.new(Time.parse(hash["draw_date"]), hash["winning_numbers"].split(" ").map(&:to_i), hash["multiplier"].to_i)
          #binding.pry   
@@ -27,23 +18,37 @@ class LotteryStrategy::Draws
       @@all << self
     end
 
+    def self.all
+        @@all
+    end
+
     def self.find_a_draw_by_date(date)
         a = Time.parse(date)
-        right_draw = @@all.detect {|draw| draw.draw_date < a }
-        puts "closest date: #{right_draw.draw_date.strftime("%m/%d/%Y")}, winning numbers: #{right_draw.winning_numbers.first 5}, powerball: #{right_draw.winning_numbers.last}".colorize(:light_blue)    
+        right_draw = @@all.detect {|draw| draw.draw_date < a }   
     end
 
     def self.counted_num
-        #binding.pry
         counts = Hash.new(0)
         @@all.each do |arr|
-            #binding.pry
             arr_1 = arr.winning_numbers.first 5
             arr_1.each do |num|
                 counts[num] +=1
             end
         end  
         counts 
+    end
+
+    def self.lucky_days(days)
+        arr = days.split(",")
+        arr_1 = []
+        arr_2 = []
+        arr.each do |el|
+            lucky_result = find_a_draw_by_date(el)
+            result = lucky_result.winning_numbers.first 5
+            arr_1 << result
+            arr_2 << lucky_result.winning_numbers.last
+        end
+        puts "Your lucky numbers: #{arr_1.flatten.shuffle.first 5}, powerball: #{arr_2.shuffle.first} "
     end
 
     def self.frequently_numbers
@@ -56,12 +61,5 @@ class LotteryStrategy::Draws
         numbers    
     end
     
-  
-    def self.all
-      @@all
-    end
-  
-    # def self.find(id)
-    #   self.all[id-1]
-    # end
+
 end
