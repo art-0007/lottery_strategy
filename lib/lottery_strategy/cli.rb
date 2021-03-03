@@ -1,20 +1,22 @@
 require 'colorize'
+require 'pry'
 class LotteryStrategy::CLI
 
     def call
         #binding.pry
-        #LotteryStrategy::Scraper.new.make_draws 
+        LotteryStrategy::Scraper.new.make_draws 
+        binding.pry
         list_draws
         menu
         goodbuy
     end
 
     def list_draws
-        puts "Hello! Do you like to play a games? These are the Biggest Lottery Winners:".colorize(:light_blue)
-        puts "____________________________________________________________________________".colorize(:yellow)
+        # puts "Hello! Do you like to play a games? These are the Biggest Lottery Winners:".colorize(:light_blue)
+        # puts "____________________________________________________________________________".colorize(:yellow)
 
-        puts "1. Top 5 players in Powerball USA     2. Top 5 players in Mega Millions USA".colorize(:green)
-        puts "____________________________________________________________________________".colorize(:yellow)
+        # puts "1. Top 5 players in Powerball USA     2. Top 5 players in Mega Millions USA".colorize(:green)
+        # puts "____________________________________________________________________________".colorize(:yellow)
 
         @draws = LotteryStrategy::Draws.draws
     end
@@ -39,7 +41,7 @@ class LotteryStrategy::CLI
 end
         
     def goodbuy
-        puts "See you next draw for more deals!!!"   
+        puts "See you next draw for more deals!!!".colorize(:green)   
     end
 
 
