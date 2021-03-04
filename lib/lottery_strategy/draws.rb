@@ -24,7 +24,27 @@ class LotteryStrategy::Draws
 
     def self.find_a_draw_by_date(date)
         a = Time.parse(date)
-        right_draw = @@all.detect {|draw| draw.draw_date < a }   
+        right_draw = @@all.detect {|draw| draw.draw_date <= a }   
+    end
+
+    def self.check_your_ticket(input)
+        ticket = input.split(",")               
+        draw = find_a_draw_by_date(ticket.last)
+        result_numbers = draw.winning_numbers
+        winning_powerball = result_numbers.last
+        winning_numbers = result_numbers.first 5
+        player_numbers = ticket[0].split(" ").map{|x| x.to_i}
+        player_powerball = ticket[1].to_i
+        your_matches =  player_numbers&winning_numbers
+       if winning_powerball == player_powerball
+        puts "You guessed the powerball!".colorize(:light_blue)
+       else
+        puts "Your powerball doesn't match.".colorize(:light_blue)
+       end 
+       puts "Your numbers matches: #{your_matches}".colorize(:light_blue)
+       puts "____________________________________________________________________________".colorize(:yellow)
+       puts "Winning numbers: #{winning_numbers}, powerball: #{winning_powerball}".colorize(:light_blue)
+       puts "____________________________________________________________________________".colorize(:yellow)  
     end
 
     def self.counted_num

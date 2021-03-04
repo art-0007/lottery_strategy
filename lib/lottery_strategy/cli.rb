@@ -63,7 +63,9 @@ to put our methods to the test, go ahead and choose your way through our list.
             closest_draw = LotteryStrategy::Draws.find_a_draw_by_date(input)
             puts "closest date: #{closest_draw.draw_date.strftime("%m/%d/%Y")}, winning numbers: #{closest_draw.winning_numbers.first 5}, powerball: #{closest_draw.winning_numbers.last}".colorize(:light_blue)
             when "8"
-            puts "option 2"
+            puts "For check your ticket enter numbers, powerball, and date in the following format: X X X X X, X, yyyy-mm-dd."
+            input  = gets.strip.downcase
+            matches = LotteryStrategy::Draws.check_your_ticket(input)
             when "list"
             list_draws
             else
