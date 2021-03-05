@@ -1,12 +1,9 @@
 #frozen_string_literal: true
-
-require_relative './lottery_strategy/version'
-require_relative './lottery_strategy/cli'
-require_relative './lottery_strategy/draws'
-require_relative './lottery_strategy/scraper'
-
+require_relative '../config/environment'
 
 module LotteryStrategy
   class Error < StandardError; end
   # Your code goes here...
 end
+
+

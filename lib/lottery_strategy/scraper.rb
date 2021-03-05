@@ -1,12 +1,9 @@
-require 'net/http'
-require 'open-uri'
-require 'json'
-
 class LotteryStrategy::Scraper
 
         URL = "https://data.ny.gov/resource/d6yy-54nr.json"
-    
-    
+        SITE = "https://www.lotterycritic.com/lottery-winners/the-biggest-lottery-winners-where-are-they-now/"
+        NY_LOTTERY = "https://nylottery.ny.gov/how-to-claim"
+        
         def get_results
             uri = URI.parse(URL)
             response = Net::HTTP.get_response(uri)
@@ -14,21 +11,17 @@ class LotteryStrategy::Scraper
             #binding.pry
             results
         end
+# Prepared for new site!
+        def self.how_to_claim
+            @@claim = Nokogiri::HTML(open(NY_LOTTERY))
+            #binding.pry
+            puts @@claim.css(".HowToClaim__Description-bmbzfk-8 dXsmkZ").text
+        end
 
-
-
-        # def self.scrape_index_page(index_url)
-        #     doc = Nokogiri::HTML(open(index_url))
-        #     students = []
-        #     doc.css("div.student-card").each do |student|
-        #       students << {
-        #       :name => student.css("h4.student-name").text,
-        #       :location => student.css("p.student-location").text,
-        #       :profile_url => student.children[1].attributes["href"].value
-        #       }
-        #     end
-        #     students
-        #   end
+        def self.top_5_largest_jackpots
+            @@doc = Nokogiri::HTML(open(SITE))
+            puts @@doc.css("div section")[1].text
+        end
       
       
         def make_draws

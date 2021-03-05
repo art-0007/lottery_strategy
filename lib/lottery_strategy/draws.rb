@@ -1,5 +1,3 @@
-require 'time'
-
 class LotteryStrategy::Draws
 
     attr_accessor :draw_date, :winning_numbers, :multiplier
@@ -7,8 +5,7 @@ class LotteryStrategy::Draws
     @@all = []
 
     def self.new_draws(hash)
-         self.new(Time.parse(hash["draw_date"]), hash["winning_numbers"].split(" ").map(&:to_i), hash["multiplier"].to_i)
-         #binding.pry   
+         self.new(Time.parse(hash["draw_date"]), hash["winning_numbers"].split(" ").map(&:to_i), hash["multiplier"].to_i)   
     end
   
     def initialize(draw_date, winning_numbers = [], multiplier = nil)
@@ -20,6 +17,34 @@ class LotteryStrategy::Draws
 
     def self.all
         @@all
+    end
+
+    def self.long_standing_numbers
+    array = Array(1..69)
+    @@all.each do |arr|
+        win_num_5 = arr.winning_numbers.first 5
+        win_num_5.each do |num|
+            if array.length<=5
+            break
+            else
+            array.delete(num) 
+            end
+        end
+    end
+    array
+    end
+
+    def self.long_standing_powerball
+        array = Array(1..26)
+        @@all.each do |arr|
+            powerball = arr.winning_numbers.last
+                if array.length==1
+                break
+                else
+                array.delete(powerball) 
+                end
+        end
+        array
     end
 
     def self.find_a_draw_by_date(date)
@@ -43,7 +68,7 @@ class LotteryStrategy::Draws
        end 
        puts "Your numbers matches: #{your_matches}".colorize(:light_blue)
        puts "____________________________________________________________________________".colorize(:yellow)
-       puts "Winning numbers: #{winning_numbers}, powerball: #{winning_powerball}".colorize(:light_blue)
+       puts "Winning numbers: #{winning_numbers}, powerball: #{winning_powerball} for date: #{draw.draw_date.strftime("%m/%d/%Y")}".colorize(:light_blue)
        puts "____________________________________________________________________________".colorize(:yellow)  
     end
 
