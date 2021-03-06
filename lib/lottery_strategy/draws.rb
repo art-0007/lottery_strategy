@@ -105,6 +105,55 @@ class LotteryStrategy::Draws
         numbers = counted_num.sort_by { |k, v| v }.first 5
         numbers    
     end
+
+    def self.mix_strategy(players_choose)
+        #binding.pry
+        strategy = players_choose.split(", ")
+        ticket = []
+        array = strategy[0].split(" ")
+        counts = Hash.new(0)
+        array.each {|x| counts[x] += 1}
+        #while ticket.flatten.length != 6 do
+            n = counts["1"]
+            ticket  << rarely_numbers.to_h.keys.shuffle.first(n)
+            n = counts["2"]
+            ticket  << frequently_numbers.to_h.keys.shuffle.first(n)
+            n = counts["3"]
+            ticket  << long_standing_numbers.shuffle.first(n)
+            if counts["4"] != 0
+            n = counts["4"]
+            draw = find_a_draw_by_date(strategy[1])
+            ticket << draw.winning_numbers.shuffle.first(n)
+            end
+            #ticket.flatten.uniq
+        #end
+        ticket.flatten   
+    end
+
+    def self.valid_numbers(strategy_mix_input)
+        #binding.pry
+        array = strategy_mix_input.split(", ")[0].split(" ")
+        valid_num = ["1","2","3","4"]
+        if array.detect {|num| !valid_num.include?(num)} == nil
+            true
+        else
+            false
+        end   
+    end
+
+    def self.valid_date(date_string_input)
+        if date_string_input.split(", ").length == 2
+        date_string= date_string_input.split(", ")[1]
+        begin
+            Date.parse(date_string)
+            true
+          rescue ArgumentError
+            false
+          end
+        else
+            false
+        end   
+    end
     
 
 end

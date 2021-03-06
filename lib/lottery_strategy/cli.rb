@@ -31,10 +31,32 @@ to put our methods to the test, go ahead and choose your way through our list.
           
     end
 
+    def mix_strategy_call
+        input = nil
+        while input != "exit"
+        puts <<-RAVEN
+For create your own lottery ticket please enter the number of your shoosen strategy (1-4)
+to every single ticket number and powerball(last number) and date if your choose include
+strategy #4(if not don't fill it) in format: X X X X X X, yyyy-mm-dd
+    RAVEN
+    puts "____________________________________________________________________________".colorize(:yellow)
+    puts "STRATEGY LIST"
+    puts "For rarely dropped numbers strategy, enter 1.".colorize(:green)
+    puts "For frequently dropped numbers strategy, enter 2.".colorize(:green)
+    puts "For long-standing numbers strategy, enter 3.".colorize(:green)
+    puts "For your lucky days strategy, enter 4.".colorize(:green)
+    puts "____________________________________________________________________________".colorize(:yellow)
+        input  = gets.strip.downcase
+        valid_input(input)
+        input = "exit"
+        end
+    end
+        
+
     def menu
 
-    input = nil
-    while input != "exit"
+        input = nil
+        while input != "exit"
         puts "Enter the number from the list or type list or exit".colorize(:light_blue)
         input  = gets.strip.downcase
         case input
@@ -56,7 +78,8 @@ to put our methods to the test, go ahead and choose your way through our list.
             lucky_draw = LotteryStrategy::Draws.lucky_days(input)
             lucky_draw
             when "6"
-                puts "option 6 mix strategy"
+                mix_strategy_call
+                #binding.pry
             when "7"
                 puts "option 7 more info about strategies"
             when "8"
@@ -70,6 +93,8 @@ to put our methods to the test, go ahead and choose your way through our list.
             matches = LotteryStrategy::Draws.check_your_ticket(input)
             when "list"
             list_draws
+            when "exit"
+            "exit"
             else
             puts "Not sure what you want, type list or exit".colorize(:red)
         end
@@ -78,6 +103,18 @@ end
         
     def goodbuy
         puts "See you next draw for more deals!!!".colorize(:green)   
+    end
+
+    def valid_input(input)
+        if LotteryStrategy::Draws.valid_numbers(input) &&  LotteryStrategy::Draws.valid_date(input)
+            ticket = LotteryStrategy::Draws.mix_strategy(input)
+            puts "Your strategy choose: for #1: strategy #{input.split(/,\s|\s/)[0]},for #2: strategy #{input.split(/,\s|\s/)[1]},for #3: strategy #{input.split(/,\s|\s/)[2]},for #4: strategy #{input.split(/,\s|\s/)[3]},for #5: strategy #{input.split(/,\s|\s/)[5]}, for powerball:  strategy #{input.split(/,\s|\s/)[6]}! " 
+            puts "Your ticket numbers: #{ticket[0..-2]}, long-standing powerball: #{ticket.last}".colorize(:light_blue)
+            else
+            puts "Not sure what you want, type list or exit".colorize(:red)
+            end
+            #binding.pry
+            ticket
     end
 
 
