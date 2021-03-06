@@ -107,13 +107,12 @@ class LotteryStrategy::Draws
     end
 
     def self.mix_strategy(players_choose)
-        #binding.pry
-        strategy = players_choose.split(", ")
+        strategy = players_choose.split(/,\s|,|\s/)
         ticket = []
-        array = strategy[0].split(" ")
         counts = Hash.new(0)
-        array.each {|x| counts[x] += 1}
+        strategy.first(6).each {|x| counts[x] += 1}
         #while ticket.flatten.length != 6 do
+        
             n = counts["1"]
             ticket  << rarely_numbers.to_h.keys.shuffle.first(n)
             n = counts["2"]
@@ -128,32 +127,6 @@ class LotteryStrategy::Draws
             #ticket.flatten.uniq
         #end
         ticket.flatten   
-    end
-
-    def self.valid_numbers(strategy_mix_input)
-        #binding.pry
-        array = strategy_mix_input.split(", ")[0].split(" ")
-        valid_num = ["1","2","3","4"]
-        if array.detect {|num| !valid_num.include?(num)} == nil
-            true
-        else
-            false
-        end   
-    end
-
-    def self.valid_date(date_string_input)
-        if date_string_input.split(", ").length == 2
-        date_string= date_string_input.split(", ")[1]
-        begin
-            Date.parse(date_string)
-            true
-          rescue ArgumentError
-            false
-          end
-        else
-            false
-        end   
-    end
-    
+    end    
 
 end

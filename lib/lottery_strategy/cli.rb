@@ -2,8 +2,6 @@ class LotteryStrategy::CLI
 
     def call
         LotteryStrategy::Scraper.new.make_draws
-        
-        #LotteryStrategy::Scraper.how_to_claim
         list_draws
         menu
         goodbuy
@@ -47,7 +45,13 @@ strategy #4(if not don't fill it) in format: X X X X X X, yyyy-mm-dd
     puts "For your lucky days strategy, enter 4.".colorize(:green)
     puts "____________________________________________________________________________".colorize(:yellow)
         input  = gets.strip.downcase
-        valid_input(input)
+        if valid_input(input)
+        ticket = LotteryStrategy::Draws.mix_strategy(input)
+            puts "Your strategy choose: for #1: strategy #{input.split(/,\s|,|\s/)[0]},for #2: strategy #{input.split(/,\s|,|\s/)[1]},for #3: strategy #{input.split(/,\s|,|\s/)[2]},for #4: strategy #{input.split(/,\s|,|\s/)[3]},for #5: strategy #{input.split(/,\s|,|\s/)[4]}, for powerball:  strategy #{input.split(/,\s|,|\s/)[5]}! " 
+            puts "Your ticket numbers: #{ticket[0..-2]}, long-standing powerball: #{ticket.last}".colorize(:light_blue)
+        else
+            puts "Not sure what you want, type list or exit".colorize(:red)
+        end
         input = "exit"
         end
     end
@@ -59,7 +63,7 @@ strategy #4(if not don't fill it) in format: X X X X X X, yyyy-mm-dd
         while input != "exit"
         puts "Enter the number from the list or type list or exit".colorize(:light_blue)
         input  = gets.strip.downcase
-        case input
+            case input
             when "1"
                 LotteryStrategy::Scraper.top_5_largest_jackpots
             when "2"
@@ -75,8 +79,13 @@ strategy #4(if not don't fill it) in format: X X X X X X, yyyy-mm-dd
             when "5"
                 puts "For our lucky days method please enter your 5 lucky dates in format: yyyy-mm-dd,yyyy-mm-dd,yyyy-mm-dd,yyyy-mm-dd,yyyy-mm-dd".colorize(:light_blue)
             input  = gets.strip.downcase
+            #binding.pry
+            if valid_input(input)
             lucky_draw = LotteryStrategy::Draws.lucky_days(input)
             lucky_draw
+            else
+                puts "Not sure what you want!!!!!!!!t".colorize(:red) 
+            end
             when "6"
                 mix_strategy_call
                 #binding.pry
@@ -85,36 +94,86 @@ strategy #4(if not don't fill it) in format: X X X X X X, yyyy-mm-dd
             when "8"
             puts "Enter the date you'd like to check in format: yyyy-mm-dd".colorize(:light_blue)
             input  = gets.strip.downcase
+            if valid_date(input) && rigth_date(input)
             closest_draw = LotteryStrategy::Draws.find_a_draw_by_date(input)
             puts "closest date: #{closest_draw.draw_date.strftime("%m/%d/%Y")}, winning numbers: #{closest_draw.winning_numbers.first 5}, powerball: #{closest_draw.winning_numbers.last}".colorize(:light_blue)
+            else
+            puts "Not sure what you want!!!!!!!!t".colorize(:red) 
+            end
             when "9"
             puts "For check your ticket enter numbers, powerball, and date in the following format: X X X X X, X, yyyy-mm-dd."
+            
             input  = gets.strip.downcase
+            if valid_input(input)
             matches = LotteryStrategy::Draws.check_your_ticket(input)
+            else
+            puts "Not sure what you want!!!!!!!!t".colorize(:red)  
+            end  
             when "list"
             list_draws
             when "exit"
             "exit"
             else
             puts "Not sure what you want, type list or exit".colorize(:red)
+            end
         end
     end
-end
         
     def goodbuy
         puts "See you next draw for more deals!!!".colorize(:green)   
     end
 
     def valid_input(input)
-        if LotteryStrategy::Draws.valid_numbers(input) &&  LotteryStrategy::Draws.valid_date(input)
-            ticket = LotteryStrategy::Draws.mix_strategy(input)
-            puts "Your strategy choose: for #1: strategy #{input.split(/,\s|\s/)[0]},for #2: strategy #{input.split(/,\s|\s/)[1]},for #3: strategy #{input.split(/,\s|\s/)[2]},for #4: strategy #{input.split(/,\s|\s/)[3]},for #5: strategy #{input.split(/,\s|\s/)[5]}, for powerball:  strategy #{input.split(/,\s|\s/)[6]}! " 
-            puts "Your ticket numbers: #{ticket[0..-2]}, long-standing powerball: #{ticket.last}".colorize(:light_blue)
-            else
-            puts "Not sure what you want, type list or exit".colorize(:red)
+
+        players_input = input.split(/,\s|,|\s/)
+        input_length = players_input.length
+        case input_length
+        when 1
+            true
+        when 5 
+            if (players_input.detect {|string_date|  (valid_date(string_date) && rigth_date(string_date)) == false}) == nil
+                true
             end
+        when 6 
             #binding.pry
-            ticket
+            if valid_numbers(input)
+                true
+            end
+        when 7 
+            if valid_numbers(players_input.first(6)) && valid_date(players_input.last) && rigth_date(players_input.last)
+            true
+            end
+        else
+            false 
+        end   
+    end
+
+    def rigth_date(date)
+        if  !valid_date(date)
+            false
+        elsif Date.parse("2011-08-01")  < Date.parse(date) && Date.parse(date) < Date.today
+        true
+        else
+        false
+        end
+    end
+
+    def valid_date(date_string)
+        begin
+            Date.parse(date_string)
+            true
+          rescue ArgumentError
+            false
+        end
+    end
+
+    def valid_numbers(players_input)
+        result = players_input.detect {|num| (1 <= num.to_i && num.to_i <= 4) == false}
+        if result == nil
+            true
+        else
+            false
+        end
     end
 
 
