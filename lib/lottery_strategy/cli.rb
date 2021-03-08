@@ -32,7 +32,7 @@ Welcome to the best lottery strategy!!! Do you like to play a games? If you are 
     def new_user
 
         input = nil
-        puts "Welcome to the best lottery strategy!!! Please enter your name:"
+        puts "Welcome to the best lottery strategy!!! Please enter your name:".colorize(:light_blue)
         input  = gets.strip.downcase
         LotteryStrategy::Board.find_or_create_by_name(input)
         menu
@@ -96,7 +96,7 @@ Welcome to the best lottery strategy!!! Do you like to play a games? If you are 
                     closest_draw = LotteryStrategy::Draws.find_a_draw_by_date(input)
                     puts "closest date: #{closest_draw.draw_date.strftime("%m/%d/%Y")}, winning numbers: #{closest_draw.winning_numbers.first 5}, powerball: #{closest_draw.winning_numbers.last}".colorize(:light_blue)
                     else
-                    puts "Please check your format input".colorize(:red) 
+                    puts "Please check your input format".colorize(:red) 
                     end
             when "7"
                 puts "For check your ticket enter numbers, powerball, and date in the following format: X X X X X X, yyyy-mm-dd."
@@ -107,7 +107,7 @@ Welcome to the best lottery strategy!!! Do you like to play a games? If you are 
                     if (valid_lottery_numbers(numbers.first(5)) && valid_powerball_number(numbers.last) && valid_date(date) && rigth_date(date)) == true
                     matches = LotteryStrategy::Draws.check_your_ticket(input)
                     else
-                    puts "Please check your format input".colorize(:red)  
+                    puts "Please check your input format".colorize(:red)  
                     end  
             when "list"
                 list_draws
