@@ -1,5 +1,5 @@
 class LotteryStrategy::Board
-    attr_accessor :user, :users, :board, :strategy_preferences, :lucky_days
+    attr_accessor :user, :board, :strategy_preferences, :lucky_days
     attr_reader :rarely_numbers, :frequently_numbers, :long_standing_numbers, :long_standing_powerball
     @@all = []
     @users = []

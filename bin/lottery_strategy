@@ -5,4 +5,3 @@ require_relative '../lib/lottery_strategy'
 LotteryStrategy::CLI.new.call
 
 
-#puts "Hello world!"
