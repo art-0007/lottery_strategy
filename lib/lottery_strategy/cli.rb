@@ -1,4 +1,6 @@
 class LotteryStrategy::CLI
+    attr_accessor :user, :users, :board, :strategy_preferences, :lucky_days
+    attr_reader :rarely_numbers, :frequently_numbers, :long_standing_numbers
 
     def call
         LotteryStrategy::Scraper.new.make_draws
@@ -9,51 +11,32 @@ class LotteryStrategy::CLI
 
     def list_draws
 puts <<-RAVEN
-Welcome to the best lottery strategy!!! Do you like to play a games? If you are ready
-to put our methods to the test, go ahead and choose your way through our list.  
+Welcome to the best lottery strategy!!! Do you like to play a games? If you are ready to put our
+ methods to the test, go ahead to create your own strategies. Choose your way through our list:  
     RAVEN
         
         puts "      To see the Biggest Powerball USA Winners, enter '1'.".colorize(:light_blue)
-        puts "      Next choose your own strategy from the list:".colorize(:light_blue)
         puts "____________________________________________________________________________".colorize(:yellow)
-        puts "      #1. rarely dropped numbers, enter '2'.".colorize(:green)
-        puts "      #2. frequently dropped numbers, enter '3'.".colorize(:green)
-        puts "      #3. long-standing numbers, enter '4'.".colorize(:green)
-        puts "      #4. your lucky days, enter '5'.".colorize(:green)
-        puts "      #5. mix strategy, enter '6'.".colorize(:green)
+        puts "      #1. For create your own account or find an existing one, enter '2'.".colorize(:green)
+        puts "      #2. For see your strategy Board, enter '3'.".colorize(:green)
+        puts "      #3. For change your stretegy preferences, enter '4'.".colorize(:green)
         puts "____________________________________________________________________________".colorize(:yellow)
-        puts "      Enter '7' for more info about strategies.".colorize(:green)
-        puts "      If you'd like to see a winning numbers by closest date, enter '8'.".colorize(:green)
-        puts "      For check your ticket, enter '9'.".colorize(:green)
+        puts "      Enter '5' for more info about strategies.".colorize(:green)
+        puts "      If you'd like to see a winning numbers by closest date, enter '6'.".colorize(:green)
+        puts "      For check your ticket, enter '7'.".colorize(:green)
         puts "      To quit, type 'exit'.".colorize(:green)
           
     end
 
-    def mix_strategy_call
+
+    def new_user
+
         input = nil
-        while input != "exit"
-        puts <<-RAVEN
-For create your own lottery ticket please enter the number of your shoosen strategy (1-4)
-to every single ticket number and powerball(last number) and date if your choose include
-strategy #4(if not don't fill it) in format: X X X X X X, yyyy-mm-dd
-    RAVEN
-    puts "____________________________________________________________________________".colorize(:yellow)
-    puts "STRATEGY LIST"
-    puts "For rarely dropped numbers strategy, enter 1.".colorize(:green)
-    puts "For frequently dropped numbers strategy, enter 2.".colorize(:green)
-    puts "For long-standing numbers strategy, enter 3.".colorize(:green)
-    puts "For your lucky days strategy, enter 4.".colorize(:green)
-    puts "____________________________________________________________________________".colorize(:yellow)
+        puts "Welcome to the best lottery strategy!!! Please enter your name:"
         input  = gets.strip.downcase
-        if valid_input(input)
-        ticket = LotteryStrategy::Draws.mix_strategy(input)
-            puts "Your strategy choose: for #1: strategy #{input.split(/,\s|,|\s/)[0]},for #2: strategy #{input.split(/,\s|,|\s/)[1]},for #3: strategy #{input.split(/,\s|,|\s/)[2]},for #4: strategy #{input.split(/,\s|,|\s/)[3]},for #5: strategy #{input.split(/,\s|,|\s/)[4]}, for powerball:  strategy #{input.split(/,\s|,|\s/)[5]}! " 
-            puts "Your ticket numbers: #{ticket[0..-2]}, long-standing powerball: #{ticket.last}".colorize(:light_blue)
-        else
-            puts "Not sure what you want, type list or exit".colorize(:red)
-        end
-        input = "exit"
-        end
+        LotteryStrategy::Board.find_or_create_by_name(input)
+        menu
+   
     end
         
 
@@ -67,86 +50,79 @@ strategy #4(if not don't fill it) in format: X X X X X X, yyyy-mm-dd
             when "1"
                 LotteryStrategy::Scraper.top_5_largest_jackpots
             when "2"
-                rarely_numbers = LotteryStrategy::Draws.rarely_numbers
-                puts "rarely numbers: #{rarely_numbers.to_h}".colorize(:light_blue)
+                new_user
             when "3"
-                frequently_numbers = LotteryStrategy::Draws.frequently_numbers
-                puts "frequently numbers: #{frequently_numbers.to_h}".colorize(:light_blue)
+                puts "Have you created your strategy preferances by using #4?"
+                input  = gets.strip.downcase
+                    case input
+                    when "y"   
+                    LotteryStrategy::Board.display
+                    else
+                    puts "Please enter #4 for add your strategy preferances first"
+                    end
             when "4"
-                long_standing_powerball = LotteryStrategy::Draws.long_standing_powerball
-                long_standing_numbers = LotteryStrategy::Draws.long_standing_numbers
-                puts "long-standing numbers: #{long_standing_numbers}, long-standing powerball: #{long_standing_powerball[0]}".colorize(:light_blue)
+                puts "For our lucky days method please enter your 3 lucky dates in format: yyyy-mm-dd,yyyy-mm-dd,yyyy-mm-dd".colorize(:light_blue)
+                input  = gets.strip.downcase
+                arr = input.split(/,\s|,|\s/)
+                result = arr.detect {|date| (rigth_date(date) && valid_date(date)) == false}
+                if result == nil
+                LotteryStrategy::Board.add_lucky_days(input)
+                puts "STRATEGY LIST"
+                puts "For rarely dropped numbers strategy, enter 1.".colorize(:green)
+                puts "For frequently dropped numbers strategy, enter 2.".colorize(:green)
+                puts "For long-standing numbers strategy, enter 3.".colorize(:green)
+                puts "For your lucky days strategy, enter 4.".colorize(:green)
+                puts "For mix strategy enter the number of your shoosen strategy (1-4) to every single ticket number and powerball(last number) in format: X X X X X X."
+                end
+                input  = gets.strip.downcase
+                if valid_strategy_numbers(input.split(' '))
+                LotteryStrategy::Board.add_strategy_preferences(input)
+                end
             when "5"
-                puts "For our lucky days method please enter your 5 lucky dates in format: yyyy-mm-dd,yyyy-mm-dd,yyyy-mm-dd,yyyy-mm-dd,yyyy-mm-dd".colorize(:light_blue)
-            input  = gets.strip.downcase
-            #binding.pry
-            if valid_input(input)
-            lucky_draw = LotteryStrategy::Draws.lucky_days(input)
-            lucky_draw
-            else
-                puts "Not sure what you want!!!!!!!!t".colorize(:red) 
-            end
+                puts "_________________________________________________________________________________________________________________________________________".colorize(:yellow)
+                puts "In our programm we have been processing over 1000 NY Powerball data draws since 2011. We are building our strategies by using that data.".colorize(:light_blue)
+                puts "We do not impose our strategies on you. We just provide you with a data analysis tool. The decisions you make yourself!".colorize(:light_blue)
+                puts "We provide you with a strategy board with which you can choose the outcome you like.".colorize(:light_blue)
+                puts "For rarely dropped numbers strategy we calculate Which numbers were drawn the least often over the past 10 years.".colorize(:light_blue)
+                puts "For frequently dropped numbers strategy we calculate Which numbers were drawn the often over the past 10 years.".colorize(:light_blue)
+                puts "For lucky days strategy we calculate which numbers dropped out in  your Happy days and use these numbers.".colorize(:light_blue)
+                puts "For mix strategy we apply our strategy for each individual ticket number including the powerball.".colorize(:light_blue)
+                puts "__________________________________________________________________________________________________________________________________________".colorize(:yellow)
+
             when "6"
-                mix_strategy_call
-                #binding.pry
+                puts "Enter the date you'd like to check in format: yyyy-mm-dd".colorize(:light_blue)
+                input  = gets.strip.downcase
+                    if valid_date(input) && rigth_date(input)
+                    closest_draw = LotteryStrategy::Draws.find_a_draw_by_date(input)
+                    puts "closest date: #{closest_draw.draw_date.strftime("%m/%d/%Y")}, winning numbers: #{closest_draw.winning_numbers.first 5}, powerball: #{closest_draw.winning_numbers.last}".colorize(:light_blue)
+                    else
+                    puts "Please check your format input".colorize(:red) 
+                    end
             when "7"
-                puts "option 7 more info about strategies"
-            when "8"
-            puts "Enter the date you'd like to check in format: yyyy-mm-dd".colorize(:light_blue)
-            input  = gets.strip.downcase
-            if valid_date(input) && rigth_date(input)
-            closest_draw = LotteryStrategy::Draws.find_a_draw_by_date(input)
-            puts "closest date: #{closest_draw.draw_date.strftime("%m/%d/%Y")}, winning numbers: #{closest_draw.winning_numbers.first 5}, powerball: #{closest_draw.winning_numbers.last}".colorize(:light_blue)
-            else
-            puts "Not sure what you want!!!!!!!!t".colorize(:red) 
-            end
-            when "9"
-            puts "For check your ticket enter numbers, powerball, and date in the following format: X X X X X, X, yyyy-mm-dd."
-            
-            input  = gets.strip.downcase
-            if valid_input(input)
-            matches = LotteryStrategy::Draws.check_your_ticket(input)
-            else
-            puts "Not sure what you want!!!!!!!!t".colorize(:red)  
-            end  
+                puts "For check your ticket enter numbers, powerball, and date in the following format: X X X X X X, yyyy-mm-dd."
+                input  = gets.strip.downcase
+                input_array = input.split(",")
+                numbers = input_array[0].split(' ')
+                date = input_array[1]
+                    if (valid_lottery_numbers(numbers.first(5)) && valid_powerball_number(numbers.last) && valid_date(date) && rigth_date(date)) == true
+                    matches = LotteryStrategy::Draws.check_your_ticket(input)
+                    else
+                    puts "Please check your format input".colorize(:red)  
+                    end  
             when "list"
-            list_draws
+                list_draws
             when "exit"
-            "exit"
+                "exit"
             else
-            puts "Not sure what you want, type list or exit".colorize(:red)
+                puts "Not sure what you want, type list or exit".colorize(:red)
             end
         end
     end
         
     def goodbuy
-        puts "See you next draw for more deals!!!".colorize(:green)   
+        puts "See you next time for more games!!!".colorize(:green)   
     end
 
-    def valid_input(input)
-
-        players_input = input.split(/,\s|,|\s/)
-        input_length = players_input.length
-        case input_length
-        when 1
-            true
-        when 5 
-            if (players_input.detect {|string_date|  (valid_date(string_date) && rigth_date(string_date)) == false}) == nil
-                true
-            end
-        when 6 
-            #binding.pry
-            if valid_numbers(input)
-                true
-            end
-        when 7 
-            if valid_numbers(players_input.first(6)) && valid_date(players_input.last) && rigth_date(players_input.last)
-            true
-            end
-        else
-            false 
-        end   
-    end
 
     def rigth_date(date)
         if  !valid_date(date)
@@ -167,9 +143,27 @@ strategy #4(if not don't fill it) in format: X X X X X X, yyyy-mm-dd
         end
     end
 
-    def valid_numbers(players_input)
+    def valid_strategy_numbers(players_input)
         result = players_input.detect {|num| (1 <= num.to_i && num.to_i <= 4) == false}
         if result == nil
+            true
+        else
+            false
+        end
+    end
+
+    def valid_lottery_numbers(players_input)
+        result = players_input.detect {|num| (1 <= num.to_i && num.to_i <= 69) == false}
+        if result == nil
+            true
+        else
+            false
+        end
+    end
+
+    def valid_powerball_number(num)
+        
+        if 1 <= num.to_i && num.to_i <= 26
             true
         else
             false

@@ -22,7 +22,7 @@ class LotteryStrategy::Draws
     def self.long_standing_numbers
     array = Array(1..69)
     @@all.each do |arr|
-        win_num_5 = arr.winning_numbers.first 5
+        win_num_5 = arr.winning_numbers.first(5)
         win_num_5.each do |num|
             if array.length<=5
             break
@@ -75,7 +75,7 @@ class LotteryStrategy::Draws
     def self.counted_num
         counts = Hash.new(0)
         @@all.each do |arr|
-            arr_1 = arr.winning_numbers.first 5
+            arr_1 = arr.winning_numbers.first(5)
             arr_1.each do |num|
                 counts[num] +=1
             end
@@ -83,36 +83,37 @@ class LotteryStrategy::Draws
         counts 
     end
 
-    def self.lucky_days(days)
-        arr = days.split(",")
+    def self.find_num_by_lucky_days(days)
         arr_1 = []
         arr_2 = []
-        arr.each do |el|
+        days.each do |el|
             lucky_result = find_a_draw_by_date(el)
-            result = lucky_result.winning_numbers.first 5
+            result = lucky_result.winning_numbers.first(5)
             arr_1 << result
             arr_2 << lucky_result.winning_numbers.last
         end
-        puts "Your lucky numbers: #{arr_1.flatten.shuffle.first 5}, powerball: #{arr_2.shuffle.first} "
+        array = []
+        array << arr_1.flatten.shuffle.first(5)
+        array << arr_2.shuffle.first
+        array
+
     end
 
     def self.frequently_numbers
-        numbers = counted_num.sort_by { |k, v| v }.last 5
+        numbers = counted_num.sort_by { |k, v| v }.last(5)
         numbers.reverse    
     end
 
     def self.rarely_numbers
-        numbers = counted_num.sort_by { |k, v| v }.first 5
+        numbers = counted_num.sort_by { |k, v| v }.first(5)
         numbers    
     end
 
-    def self.mix_strategy(players_choose)
-        strategy = players_choose.split(/,\s|,|\s/)
+    def self.mix_strategy(strategies, lucky_days)
         ticket = []
         counts = Hash.new(0)
-        strategy.first(6).each {|x| counts[x] += 1}
+        strategies.each {|x| counts[x] += 1}
         #while ticket.flatten.length != 6 do
-        
             n = counts["1"]
             ticket  << rarely_numbers.to_h.keys.shuffle.first(n)
             n = counts["2"]
@@ -121,8 +122,8 @@ class LotteryStrategy::Draws
             ticket  << long_standing_numbers.shuffle.first(n)
             if counts["4"] != 0
             n = counts["4"]
-            draw = find_a_draw_by_date(strategy[1])
-            ticket << draw.winning_numbers.shuffle.first(n)
+            lucky_days_numbers = find_num_by_lucky_days(lucky_days)
+            ticket << find_num_by_lucky_days(lucky_days).flatten.first(n)
             end
             #ticket.flatten.uniq
         #end
