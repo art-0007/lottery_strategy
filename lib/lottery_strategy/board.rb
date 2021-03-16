@@ -36,16 +36,16 @@ class LotteryStrategy::Board
         lucky_days_numbers = LotteryStrategy::Draws.find_num_by_lucky_days(board.lucky_days)
         mix_strategy = LotteryStrategy::Draws.mix_strategy(board.strategy_preferences, board.lucky_days)
         puts "____________________________________________________________________________".colorize(:yellow)
-        puts "User-name: #{board.user}".colorize(:green)
+        puts "User-name: #{board.user.capitalize}".colorize(:green)
         puts "User strategy preferences: #{board.strategy_preferences}".colorize(:green)
         puts "User lucky days: #{board.lucky_days}".colorize(:green)
         puts "____________________________________________________________________________".colorize(:yellow)
         puts "Strategic combinations:"
-        puts "  |   1.Rarely dropped numbers: #{board.rarely_numbers}         |".colorize(:light_blue)
-        puts "  |   2.Frequently dropped numbers: #{board.frequently_numbers}    |".colorize(:light_blue)
+        puts "  |   1.Rarely dropped numbers (num => quantity): #{board.rarely_numbers}         |".colorize(:light_blue)
+        puts "  |   2.Frequently dropped numbers (num => quantity): #{board.frequently_numbers}    |".colorize(:light_blue)
         puts "  |   3.Long-standing numbers: #{board.long_standing_numbers}, powerball: #{board.long_standing_powerball}|".colorize(:light_blue)
         puts "  |   4.User lucky days numbers: #{lucky_days_numbers}                     |".colorize(:light_blue)
-        puts "  |   5.User mix strategy numbers: #{mix_strategy}                      |".colorize(:light_blue)
+        puts "  |   5.User mix strategy numbers: #{mix_strategy}                      |".colorize(:yellow)
         puts "____________________________________________________________________________".colorize(:yellow)
 
     end
@@ -63,11 +63,12 @@ class LotteryStrategy::Board
     end
 
     def self.find_or_create_by_name(name)
-        user_name = @users.detect{|x| x.name == name}
+        #binding.pry
+        user_name = @@all.detect{|x| x.user == name}
         if user_name == nil
           self.create_by_name(name)
         else
-            user_name
+            user_name = self
         end
     end
     
